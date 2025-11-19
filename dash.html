@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGROGUARD Dashboard</title>
+<!-- Include Tailwind and Bootstrap CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+/* Custom Styles based on Bootstrap/Tailwind hybrid for modern look */
+body { background-color: #f4f7f6; font-family: 'Inter', sans-serif; }
+.dashboard-header { background-color: #1e3a8a; color: white; padding: 20px 0; margin-bottom: 30px; border-radius: 0 0 10px 10px; }
+.card { border-radius: 10px; box-shadow: 0 6px 12px rgba(0,0,0,.1); border: none; transition: transform 0.2s; }
+.card:hover { transform: translateY(-3px); }
+.card-header-custom { background-color: #3498db; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px; padding: 12px 20px; font-weight: 700; font-size: 1.1rem; }
+.sensor-icon { font-size: 3rem; color: #e67e22; }
+.prediction-card { background-color: #ecf0f1; border-left: 6px solid; }
+.image-card img { height: auto; max-height: 400px; object-fit: cover; border-radius: 8px; transition: opacity 0.5s; }
+</style>
+</head>
+<body>
+
+<!-- Header Section -->
+<header class="dashboard-header text-center shadow-lg">
+<h1>🌱 AGROGUARD | Azania Secondary School Farm</h1>
+<p class="lead text-gray-200">Intelligent Farm Monitoring System</p>
+</header>
+
+<div class="container mt-5">
+<!-- Row 1: Environmental Monitoring -->
+<div class="row mb-5">
+<div class="col-12 text-center mb-4">
+<h2 class="text-xl font-bold text-gray-700">Environmental Conditions</h2>
+</div>
+<!-- Environment Card 1: DHT -->
+<div class="col-md-6 mb-4">
+<div class="card h-100">
+<div class="card-header-custom bg-indigo-600">🌡️ Air Quality (DHT Sensor)</div>
+<div class="card-body text-center p-4">
+<div class="row align-items-center">
+<div class="col-4">
+<span class="sensor-icon text-indigo-500">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-thermometer-half" viewBox="0 0 16 16"><path d="M9.5 12.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/><path d="M2.5 8.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 0a.5.5 0 0 0-.5.5V11a.5.5 0 0 0 1 0V.5A.5.5 0 0 0 5 0zM11 0a.5.5 0 0 0-.5.5V11a.5.5 0 0 0 1 0V.5a.5.5 0 0 0-.5-.5z"/></svg>
+</span>
+</div>
+<div class="col-8 text-start">
+<p class="card-text fs-4 text-gray-800">Temp: <strong class="text-red-500" id="temperature">--</strong> °C</p>
+<p class="card-text fs-4 text-gray-800">Humidity: <strong class="text-blue-500" id="humidity">--</strong> %</p>
+</div>
+</div>
+<small class="text-muted block mt-3" id="timestamp">Last Updated: No data</small>
+</div>
+</div>
+</div>
+
+<!-- Environment Card 2: Soil Moisture -->
+<div class="col-md-6 mb-4">
+<div class="card h-100">
+<div class="card-header-custom bg-emerald-600">💧 Soil Hydration</div>
+<div class="card-body text-center p-4">
+<div class="row align-items-center">
+<div class="col-4">
+<span class="sensor-icon text-emerald-500">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-water" viewBox="0 0 16 16"><path d="M12 4.5l-4-4-4 4-2 2v6h12v-6zM8 1.414l2.5 2.5H5.5L8 1.414zM3 14h10v-5H3z"/></svg>
+</span>
+</div>
+<div class="col-8 text-start">
+<p class="card-text fs-4 text-gray-800">Soil Moisture: <strong class="text-emerald-600" id="soil-moisture">--</strong> %</p>
+<div class="progress" style="height: 10px; background-color: #d1d5db;">
+<div class="progress-bar bg-success" role="progressbar" id="soil-moisture-bar"
+style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+</div>
+<small class="text-muted mt-2 block">0% (Dry) | 100% (Wet)</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr class="mb-5">
+
+<!-- Row 2: Image Analysis (Archived Original & Processed) -->
+<div class="row mb-5">
+<div class="col-12 text-center mb-4">
+<h2 class="text-xl font-bold text-gray-700">Visual Plant Health Analysis (Independent Latest)</h2>
+</div>
+
+<!-- Image Card 1: Archived Original Image (Fallback implemented in JS) -->
+<div class="col-md-6 mb-4">
+<div class="card image-card">
+<div class="card-header-custom bg-yellow-600">📸 Original Archived Frame</div>
+<div class="card-body text-center p-3">
+<img id="live-image" src="https://placehold.co/600x400/9ca3af/ffffff?text=Fetching+Archived+Image..." class="img-fluid w-full" alt="Archived Original Image of the field">
+</div>
+</div>
+</div>
+
+<!-- Image Card 2: Processed Image (Mismatch handling implemented in JS) -->
+<div class="col-md-6 mb-4">
+<div class="card image-card">
+<div class="card-header-custom bg-red-600">🔍 AI-Processed Health Map</div>
+<div class="card-body text-center p-3">
+<img id="processed-image" src="https://placehold.co/600x400/4b5563/ffffff?text=Fetching+Processed+Image..." class="img-fluid w-full" alt="AI Processed Image showing plant health">
+</div>
+</div>
+</div>
+</div>
+
+<hr class="mb-5">
+
+<!-- Row 3: Prediction, Explanation, and Solution -->
+<div class="row mb-5">
+<div class="col-12 text-center mb-4">
+<h2 class="text-xl font-bold text-gray-700">Decision Support System</h2>
+</div>
+<div class="col-12">
+<div class="card prediction-card shadow-xl" id="main-prediction-card">
+<div class="card-body p-5">
+<h3 class="card-title text-secondary font-bold text-2xl" id="prediction-text">Synchronization Pending...</h3>
+<h4 class="mt-4 font-semibold text-lg text-gray-700">💡 Explanation:</h4>
+<p id="explanation-text" class="text-gray-600">Waiting for the first synchronized analysis data.</p>
+<h4 class="mt-4 font-semibold text-lg text-gray-700">🛠️ Recommended Solution & Way Forward:</h4>
+<ul id="solution-list" class="list-disc list-inside text-gray-600 space-y-1">
+<li>Ensure all processing scripts have generated data with matching IDs.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<footer class="text-center mt-6 py-3 border-t text-gray-500">
+<p>&copy; 2025 AGROGUARD | Azania Secondary School</p>
+</footer>
+
+</div>
+
+<!-- Include Bootstrap JS (required for progress bar styling) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- JavaScript to Fetch Data and Update UI -->
+<script>
+// Fetch data from Flask API
+async function fetchData() {
+try {
+const res = await fetch('/sensor-data');
+if (!res.ok) {
+throw new Error('Server error, unable to fetch data');
+}
+const data = await res.json();
+// Get the interpretation data directly from the server's response.
+// The server ensures this block contains the exact prediction, explanation,
+// solution, and status_color from the latest JSON file.
+const interpretation = data.interpretation;
+
+// --- 1. Update Sensor Data ---
+document.getElementById('timestamp').textContent = 'Last Updated: ' + data.timestamp;
+// Sanitize and display sensor data
+const temperature = typeof data.temperature === 'number' ? data.temperature.toFixed(1) : '--';
+const humidity = typeof data.humidity === 'number' ? data.humidity.toFixed(1) : '--';
+const moisture = typeof data.soil_moisture === 'number' ? data.soil_moisture.toFixed(0) : '--';
+
+document.getElementById('temperature').textContent = temperature;
+document.getElementById('humidity').textContent = humidity;
+document.getElementById('soil-moisture').textContent = moisture + '%';
+// Update Soil Moisture Bar
+if (typeof data.soil_moisture === 'number') {
+const soilBar = document.getElementById('soil-moisture-bar');
+const moisturePercent = data.soil_moisture.toFixed(0) + '%';
+soilBar.style.width = moisturePercent;
+soilBar.setAttribute('aria-valuenow', data.soil_moisture.toFixed(0));
+
+// Dynamic color based on moisture level
+if (data.soil_moisture <= 10) {
+soilBar.className = 'progress-bar bg-danger';
+} else if (data.soil_moisture >= 90) {
+soilBar.className = 'progress-bar bg-primary';
+} else {
+soilBar.className = 'progress-bar bg-success';
+}
+}
+// --- 2. Update Interpretation and Solution (Using Server's Dynamic Content) ---
+const predictionCard = document.getElementById('main-prediction-card');
+const predictionTextH3 = document.getElementById('prediction-text');
+const solutionList = document.getElementById('solution-list');
+// Map status names to Tailwind/Bootstrap colors
+const statusColorMap = {
+'success': 'green',
+'danger': 'red',
+'warning': 'orange',
+'secondary': 'gray',
+'info': 'blue'
+};
+// Use the color dictated by the backend JSON file
+const statusColor = statusColorMap[interpretation.status_color] || 'gray';
+
+// Update text fields with the full dynamic text from the analysis file
+predictionTextH3.textContent = interpretation.prediction;
+document.getElementById('explanation-text').textContent = interpretation.explanation;
+// Update prediction card styling and text color
+predictionCard.style.borderLeft = `6px solid ${statusColor}`;
+predictionTextH3.className = `card-title text-${statusColor}-700 font-bold text-2xl`;
+// Update the solution list (handle single string solution separated by semicolons)
+let solutions = [];
+if (typeof interpretation.solution === 'string') {
+// Splits solutions separated by semicolon
+solutions = interpretation.solution.split(';').map(s => s.trim()).filter(s => s.length > 0);
+} else if (Array.isArray(interpretation.solution)) {
+solutions = interpretation.solution.map(s => s.trim()).filter(s => s.length > 0);
+}
+
+if (solutions.length === 0) {
+solutionList.innerHTML = '<li>No specific solution provided by the analysis.</li>';
+} else {
+solutionList.innerHTML = solutions.map(s => `<li>${s}</li>`).join('');
+}
+
+// --- 3. Update Images (Independent Latest Fetch) ---
+const liveImgElement = document.getElementById('live-image');
+const processedImgElement = document.getElementById('processed-image');
+// A. Original Archived Frame
+if (data.archived_original) {
+liveImgElement.src = '/image/archived/' + data.archived_original;
+liveImgElement.alt = "Latest original frame found in the archive.";
+} else {
+liveImgElement.src = 'https://placehold.co/600x400/9ca3af/ffffff?text=NO+ARCHIVED+IMAGE+YET';
+liveImgElement.alt = "No archived original image available.";
+}
+
+// B. Processed Image
+if (data.mismatch_processed || !data.latest_processed) {
+// Show text: File is missing from the processed directory
+processedImgElement.src = 'https://placehold.co/600x400/808080/ffffff?text=AI+Processed+Image+MISSING.+Check+processor+logs.';
+processedImgElement.alt = "AI processed image missing.";
+} else {
+// Latest file found
+processedImgElement.src = '/image/processed/' + data.latest_processed;
+processedImgElement.alt = "Latest AI Processed Image showing plant health";
+}
+
+} catch (err) {
+console.error('Error fetching data:', err);
+// Fallback for visual error
+document.getElementById('timestamp').textContent = 'Error: Connection Failed';
+document.getElementById('prediction-text').textContent = 'System Offline.';
+}
+}
+
+// Refresh every 10 seconds
+setInterval(fetchData, 10000);
+fetchData(); // Initial load
+</script>
+</body>
+</html>
